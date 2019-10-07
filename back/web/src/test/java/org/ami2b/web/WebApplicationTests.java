@@ -1,4 +1,4 @@
-package org.ami2b.web.web;
+package org.ami2b.web;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
