@@ -14,6 +14,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 
+
 @RestController
 @RequestMapping("/api")
 public class AuthController {
@@ -23,8 +24,6 @@ public class AuthController {
 	}
 
 
-//@Resource(name="org.springframework.security.authenticationManager")
-//	private AuthenticationManager authenticationManager;
 	@Autowired
         private AuthenticationManagerBuilder builder;
 
@@ -33,12 +32,6 @@ public class AuthController {
 		public String password;
 	}
 
-	@PostMapping("/login")
-	public String login(@RequestBody Credentials creds) {
-		Authentication authIn = new UsernamePasswordAuthenticationToken(creds.login, creds.password);
-		builder.getObject().authenticate(authIn);
-		return creds.login;
-	}
 
 	@GetMapping("/vip_hello")
 	public String getVipHello() {
