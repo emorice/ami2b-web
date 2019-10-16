@@ -5,6 +5,7 @@ import eu.fraho.spring.securityJwt.base.dto.JwtUser;
 import java.util.Collections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.*;
@@ -22,12 +23,16 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.*;
 import org.springframework.stereotype.Component;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.ami2b.web.models.UserRepository;
 
 @Configuration
 @Order(89) // Used to decide which web security Spring uses (generic)
+@Slf4j
 public class ApiWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	// We want to "extend" the JwtConfig, but doing a second publicly visible JwtConfig messes with JWT-boot
+	// So we let the default one be, and wire it privately here.
 	@Autowired
 	private JwtSecurityConfig jwtConfig;
 
@@ -35,58 +40,34 @@ public class ApiWebSecurityConfig extends WebSecurityConfigurerAdapter {
 	public void configure(HttpSecurity http) throws Exception {
 		// Apply default from jwt
 		jwtConfig.configure(http);
+		// After this, session and csrf are globally disabled,
+		// Authorization by token bearer is globally enabled,
+		// Everything is unprotected by default.
 
 		// Secure the rest
 		http
 			.authorizeRequests()
 				.antMatchers("/api/hello").permitAll()
 				.antMatchers("/auth/login").permitAll()
+				.antMatchers("/h2-console/**").permitAll() // TODO: remove
 				.anyRequest().authenticated()
 				.and()
-			.csrf().ignoringAntMatchers("/api/**", "/auth/**");
+			.csrf().ignoringAntMatchers("/api/**", "/auth/**", "/h2-console/**")
+			.and()
+			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) // allow sessions for developper tools
+			.and()
+			.headers().frameOptions().sameOrigin(); // allow frames for dev tools
 
 	}
-
-	/*
-	// Every instance of JwtSecurityConfig yield a manager, so we need an
-	// override in one of them with higher priority
-	@Bean(name = BeanIds.AUTHENTICATION_MANAGER)
-	@Primary
-	@Override
-	public AuthenticationManager authenticationManagerBean() throws Exception {
-		return super.authenticationManagerBean();
-	}
-	*/
-
 
 	@Component
 	static public class StupidUserDetailsService implements UserDetailsService {
 		@Autowired
-		private PasswordEncoder passwordEncoder;
-
-		private static final Logger logger = LoggerFactory.getLogger(StupidUserDetailsService.class);
+		private UserRepository users;
 
 		@Override
 		public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-			logger.warn("Loading");
-			logger.warn(username);
-			if (username.equals("user")) {
-				logger.warn("Returning");
-				logger.warn(username);
-
-				JwtUser user = new JwtUser();
-				user.setUsername("user");
-				user.setPassword(passwordEncoder.encode("password"));
-				user.setAuthorities(Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")));
-				user.setAccountNonExpired(true);
-				user.setAccountNonLocked(true);
-				user.setApiAccessAllowed(true);
-				user.setCredentialsNonExpired(true);
-				user.setEnabled(true);
-				return user;
-			} else {
-				throw new UsernameNotFoundException("No such user");
-			}
+			return users.findByUsername(username).toJwtUser();
 		}
 	}
 
