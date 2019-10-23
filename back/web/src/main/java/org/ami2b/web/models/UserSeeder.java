@@ -28,7 +28,7 @@ public class UserSeeder {
     private PasswordEncoder passwordEncoder;
 
     public void addFirstUser() {
-	    log.warn("Seeding first user");
+	    log.info("Seeding first user");
 	    User user1 = new User();
 	    user1.setUsername("user@domain");
 	    user1.setPassword(passwordEncoder.encode("password"));

@@ -48,6 +48,7 @@ public class ApiWebSecurityConfig extends WebSecurityConfigurerAdapter {
 		http
 			.authorizeRequests()
 				.antMatchers("/api/hello").permitAll()
+				.antMatchers("/api/genome/**").permitAll() // TODO: remove
 				.antMatchers("/auth/login").permitAll()
 				.antMatchers("/h2-console/**").permitAll() // TODO: remove
 				.anyRequest().authenticated()
