@@ -4,10 +4,16 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
+import javax.persistence.OneToMany;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import java.util.Collections;
 import eu.fraho.spring.securityJwt.base.dto.JwtUser;
 import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.Set;
+import java.util.HashSet;
+
+import org.ami2b.web.models.Project;
 
 @Entity
 @Data
@@ -19,7 +25,12 @@ public class User  {
 	@Column(unique=true)
 	private String username;
 
+	@JsonIgnore
 	private String password;
+
+
+	@OneToMany
+	public Set<Project> projects = new HashSet();
 
 	public JwtUser toJwtUser() {
 		// For now everything is builtin, but can be easely changed to
