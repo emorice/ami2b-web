@@ -71,7 +71,6 @@ public class ApiWebSecurityConfig extends WebSecurityConfigurerAdapter {
 			return users.findByUsername(username).toJwtUser();
 		}
 	}
-
 }
 
 
