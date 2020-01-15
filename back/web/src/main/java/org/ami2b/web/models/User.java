@@ -4,12 +4,14 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
-import javax.persistence.OneToMany;
+import javax.persistence.ManyToMany;
+import javax.persistence.FetchType;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import java.util.Collections;
 import eu.fraho.spring.securityJwt.base.dto.JwtUser;
 import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import java.util.Set;
 import java.util.HashSet;
 
@@ -29,7 +31,8 @@ public class User  {
 	private String password;
 
 
-	@OneToMany
+	@ManyToMany(fetch=FetchType.LAZY)
+	@JsonManagedReference
 	public Set<Project> projects = new HashSet();
 
 	public JwtUser toJwtUser() {
