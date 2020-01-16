@@ -35,6 +35,9 @@ public class UserSeeder {
     private FeatureRepository features;
 
     @Autowired
+    private PeptideRepository peptides;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     public void addFirstUser() {
@@ -52,11 +55,19 @@ public class UserSeeder {
 	    log.info("Seeding sample data");
 	    Sequence seq1 = new Sequence();
 	    seq1.setSequence("AATGCGGCTGACAGATTCGGTGCTGGATTAACTGAGTCGGTAGGCTGAGTCGGATG");
+	    Sequence ss1 = new Sequence();
+	    Sequence t1 = new Sequence();
+	    ss1.setSequence(seq1.getSequence().substring(2, 29));
+	    t1.setSequence("MARRDTGWVDTAGGD");
 	    Genome g1 = new Genome();
 	    g1.setSequence(seq1);
 	    g1.setDescription("some fake sequence");
 	    g1 = genomes.save(g1);
 	    Feature f1 = new Feature();
+	    Peptide p1 = new Peptide();
+	    p1.setSequence(t1);
+	    p1.setGenome(g1);
+	    p1 = peptides.save(p1);
 	    f1.setAccession("XXY1234");
 	    f1.setStart(2L);
     	    f1.setStop(28L);
@@ -66,6 +77,8 @@ public class UserSeeder {
 	    f1.setTranscriptBiotype("protein_coding");
 	    f1.setDescription("Hypothetical protein");
 	    f1.setGenome(g1);
+	    f1.setSequence(ss1);
+	    f1.setPeptide(p1);
 	    f1 = features.save(f1);
 	    Project project1 = new Project();
 	    Project project2 = new Project();

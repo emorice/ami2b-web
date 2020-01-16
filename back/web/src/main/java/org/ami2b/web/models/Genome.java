@@ -36,6 +36,9 @@ public class Genome  {
 	@JsonIgnore
 	private List<Feature> features;
 
+	@OneToMany(mappedBy="genome")
+	private List<Peptide> peptides;
+
 	public void setSequence(Sequence sequence) {
 		setLength(sequence.getSequence().length());
 		this.sequence = sequence;
