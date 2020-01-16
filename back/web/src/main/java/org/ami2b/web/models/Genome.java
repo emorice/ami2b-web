@@ -36,7 +36,7 @@ public class Genome  {
 	@JsonIgnore
 	private List<Feature> features;
 
-	@OneToMany(mappedBy="genome")
+	@OneToMany(mappedBy="genome", fetch=FetchType.LAZY, cascade=CascadeType.ALL)
 	private List<Peptide> peptides;
 
 	public void setSequence(Sequence sequence) {

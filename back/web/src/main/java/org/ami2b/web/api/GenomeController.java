@@ -10,11 +10,15 @@ import java.io.InputStream;
 import javax.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.biojava.nbio.core.sequence.DNASequence;
+import org.biojava.nbio.core.sequence.ProteinSequence;
 import org.biojava.nbio.core.sequence.io.FastaReader;
 import org.biojava.nbio.core.sequence.io.GenericFastaHeaderParser;
 import org.biojava.nbio.core.sequence.io.DNASequenceCreator;
+import org.biojava.nbio.core.sequence.io.ProteinSequenceCreator;
 import org.biojava.nbio.core.sequence.compound.NucleotideCompound;
+import org.biojava.nbio.core.sequence.compound.AminoAcidCompound;
 import org.biojava.nbio.core.sequence.compound.DNACompoundSet;
+import org.biojava.nbio.core.sequence.compound.AminoAcidCompoundSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,6 +43,8 @@ import org.springframework.data.domain.Pageable;
 import org.ami2b.web.models.Sequence;
 import org.ami2b.web.models.Feature;
 import org.ami2b.web.models.FeatureRepository;
+import org.ami2b.web.models.Peptide;
+import org.ami2b.web.models.PeptideRepository;
 import org.ami2b.web.models.Genome;
 import org.ami2b.web.models.GenomeRepository;
 
@@ -50,6 +56,9 @@ public class GenomeController {
 
 	@Autowired
 	private FeatureRepository features;
+
+	@Autowired
+	private PeptideRepository peptides;
 
 	private class IUPACDNACompoundSet extends DNACompoundSet {
 		public IUPACDNACompoundSet() {
@@ -73,6 +82,15 @@ public class GenomeController {
 				stream,
 				new GenericFastaHeaderParser<DNASequence, NucleotideCompound>(),
 				new DNASequenceCreator(new IUPACDNACompoundSet()));
+		return fastaReader.process();
+	}
+	private LinkedHashMap<String, ProteinSequence> readProteinFasta(InputStream stream)
+		throws IOException {
+
+		FastaReader<ProteinSequence, AminoAcidCompound> fastaReader = new FastaReader<ProteinSequence, AminoAcidCompound>(
+				stream,
+				new GenericFastaHeaderParser<ProteinSequence, AminoAcidCompound>(),
+				new ProteinSequenceCreator(AminoAcidCompoundSet.getAminoAcidCompoundSet()));
 		return fastaReader.process();
 	}
 
@@ -199,7 +217,51 @@ public class GenomeController {
 				return pagedResourcesAssembler.toResource(page, assembler);
 			}
 
+	@PostMapping("/genomes/{id}/uploadPeptides")
+	@ResponseStatus(HttpStatus.CREATED)
+	@Transactional
+	public ResponseEntity<PersistentEntityResource> uploadPeptides(
+			@PathVariable Long id,
+			@RequestParam MultipartFile fastaFile,
+			@Autowired PersistentEntityResourceAssembler assembler)
+			throws IOException {
+		log.info("Received file of length " + fastaFile.getSize());
 
+		Genome genome;
+		try {
+			genome = genomes.findById(id).get();
+		} catch(NoSuchElementException e) {
+			return new ResponseEntity(HttpStatus.NOT_FOUND);
+		}
+		List<Peptide> peptides = genome.getPeptides();
 
+		LinkedHashMap<String,ProteinSequence> sequences =
+			readProteinFasta(fastaFile.getInputStream());
+		log.info("Parsed " + sequences.size() + " sequences");
 
+		for(Map.Entry<String, ProteinSequence> record: sequences.entrySet() ) {
+			Sequence sequence = new Sequence();
+			Peptide peptide = new Peptide();
+			//String header = record.getKey();
+			sequence.setSequence(record.getValue().getSequenceAsString());
+			peptide.setSequence(sequence);
+			peptide.setGenome(genome);
+			peptides.add(peptide);
+		}
+
+		log.info("Persisting genome with " + genome.getPeptides().size() + " peptides.");
+		genome = genomes.save(genome);
+
+		return ResponseEntity.ok(assembler.toResource(genome));
+	}	
+
+	@GetMapping("/genomes/{id}/peptides")
+	public @ResponseBody PagedResources<PersistentEntityResource> getPeptides(
+			@PathVariable Long id,
+			Pageable pageable,
+			@Autowired PersistentEntityResourceAssembler assembler)
+			{
+				Page<Peptide> page = peptides.findByGenomeId(id, pageable);
+				return pagedResourcesAssembler.toResource(page, assembler);
+			}
 }
