@@ -6,6 +6,7 @@ import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import java.util.Collections;
 import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Data
@@ -15,5 +16,6 @@ public class Sequence  {
 	private Long id;
 
 	@Column(columnDefinition="text")
+	@JsonIgnore
 	private String sequence;
 }
