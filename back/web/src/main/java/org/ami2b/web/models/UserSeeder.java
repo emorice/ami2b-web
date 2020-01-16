@@ -88,5 +88,6 @@ public class UserSeeder {
 	    project1 = projects.save(project1);
 	    project2 = projects.save(project2);
 	    user.setProjects(new HashSet<Project>(Arrays.asList(project1, project2)));
+	    user.getTasks().add(f1);
     }
 }

@@ -13,9 +13,12 @@ import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import java.util.Set;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.HashSet;
 
 import org.ami2b.web.models.Project;
+import org.ami2b.web.models.Feature;
 
 @Entity
 @Data
@@ -33,6 +36,8 @@ public class User  {
 	@JsonIgnore
 	private String password;
 
+	@ManyToMany(fetch=FetchType.LAZY)
+	public List<Feature> tasks = new ArrayList();
 
 	@ManyToMany(fetch=FetchType.LAZY)
 	@JsonManagedReference

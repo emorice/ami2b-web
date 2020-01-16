@@ -5,13 +5,17 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.FetchType;
 import javax.persistence.CascadeType;
+import java.util.List;
+import java.util.ArrayList;
 import lombok.Data;
 
 import org.ami2b.web.models.Genome;
+import org.ami2b.web.models.User;
 import org.ami2b.web.models.Peptide;
 
 @Entity
@@ -26,6 +30,10 @@ public class Feature  {
 	@ManyToOne()
 	@JsonBackReference
 	private Genome genome;
+
+	@ManyToMany(mappedBy="tasks")
+	@JsonBackReference
+	private List<User> annotators = new ArrayList();;
 
 	private Long start;
 
