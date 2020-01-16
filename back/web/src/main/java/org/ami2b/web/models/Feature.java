@@ -54,6 +54,11 @@ public class Feature  {
 	@OneToOne(cascade=CascadeType.ALL)
 	private Sequence sequence;
 
+	public void setSequence(Sequence sequence) {
+		setLength(sequence.getSequence().length());
+		this.sequence = sequence;
+	}
+
 	@OneToOne()
 	private Peptide peptide;
 }
