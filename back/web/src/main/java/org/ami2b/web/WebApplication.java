@@ -30,7 +30,7 @@ public class WebApplication {
 		return new RepositoryRestConfigurerAdapter() {
 			@Override
 			public void configureRepositoryRestConfiguration(RepositoryRestConfiguration config) {
-				config.getCorsRegistry().addMapping("/api/**");
+				config.getCorsRegistry().addMapping("/api/**").allowedMethods("*");
 			}
 		};
 	}
