@@ -13,6 +13,7 @@ import lombok.Data;
 
 import org.ami2b.web.models.Genome;
 import org.ami2b.web.models.Sequence;
+import org.ami2b.web.models.Feature;
 
 @Entity
 @Data
@@ -26,4 +27,7 @@ public class Peptide  {
 
 	@OneToOne(cascade=CascadeType.ALL)
 	private Sequence sequence;
+
+	@OneToOne(mappedBy="peptide")
+	private Feature feature;
 }
