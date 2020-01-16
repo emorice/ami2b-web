@@ -32,6 +32,9 @@ public class UserSeeder {
     private ProjectRepository projects;
 
     @Autowired
+    private FeatureRepository features;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     public void addFirstUser() {
@@ -48,11 +51,22 @@ public class UserSeeder {
     public void addSample(User user) {
 	    log.info("Seeding sample data");
 	    Sequence seq1 = new Sequence();
-	    seq1.setSequence("AATTCGGCTGACAGATTCGGTGCTGGATAGGCTGAGTCGGTAGGCTGAGTCGGATG");
+	    seq1.setSequence("AATGCGGCTGACAGATTCGGTGCTGGATTAACTGAGTCGGTAGGCTGAGTCGGATG");
 	    Genome g1 = new Genome();
 	    g1.setSequence(seq1);
 	    g1.setDescription("some fake sequence");
 	    g1 = genomes.save(g1);
+	    Feature f1 = new Feature();
+	    f1.setAccession("XXY1234");
+	    f1.setStart(2L);
+    	    f1.setStop(28L);
+	    f1.setStrand(1L);
+	    f1.setGene("stufR");
+	    f1.setGeneBiotype("protein_coding");
+	    f1.setTranscriptBiotype("protein_coding");
+	    f1.setDescription("Hypothetical protein");
+	    f1.setGenome(g1);
+	    f1 = features.save(f1);
 	    Project project1 = new Project();
 	    Project project2 = new Project();
 	    project1.setName("prj1");

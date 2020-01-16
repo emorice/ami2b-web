@@ -2,18 +2,21 @@ package org.ami2b.web.models;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import eu.fraho.spring.securityJwt.base.dto.JwtUser;
-import java.util.Collections;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.FetchType;
 import lombok.Data;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import org.ami2b.web.models.Sequence;
+import org.ami2b.web.models.Feature;
 
 @Entity
 @Data
@@ -27,8 +30,11 @@ public class Genome  {
 	private int length;
 
 	@OneToOne(cascade=CascadeType.ALL)
-	@JsonIgnore // Seq can be very long, separate endpoint to retrieve it.
 	private Sequence sequence;
+
+	@OneToMany(mappedBy="genome", fetch=FetchType.LAZY)
+	@JsonIgnore
+	private List<Feature> features;
 
 	public void setSequence(Sequence sequence) {
 		setLength(sequence.getSequence().length());
