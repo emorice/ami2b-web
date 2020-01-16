@@ -14,6 +14,8 @@ import org.springframework.hateoas.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpHeaders;
+import org.springframework.data.rest.webmvc.PersistentEntityResourceAssembler;
+import org.springframework.data.rest.webmvc.PersistentEntityResource;
 
 @RepositoryRestController
 public class UserController {
@@ -26,12 +28,12 @@ public class UserController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/users/self") 
-    public @ResponseBody ResponseEntity<?> getSelf() {
+    public @ResponseBody PersistentEntityResource getSelf(@Autowired PersistentEntityResourceAssembler assembler) {
 	    Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 	    if(principal instanceof JwtUser)
-		    return ResponseEntity
-			    .status(HttpStatus.MOVED_PERMANENTLY)
-			    .header(HttpHeaders.LOCATION,"/api/users/" + ((JwtUser)principal).getId()).build();
+		    return assembler.toResource(
+			    users.findById(((JwtUser)principal).getId()).get()
+			    );
 	    return null;
     }
 

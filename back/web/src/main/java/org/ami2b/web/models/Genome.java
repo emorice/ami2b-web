@@ -22,7 +22,16 @@ public class Genome  {
 	@GeneratedValue
 	private Long id;
 
+	private String description;
+
+	private int length;
+
 	@OneToOne(cascade=CascadeType.ALL)
 	@JsonIgnore // Seq can be very long, separate endpoint to retrieve it.
 	private Sequence sequence;
+
+	public void setSequence(Sequence sequence) {
+		setLength(sequence.getSequence().length());
+		this.sequence = sequence;
+	}
 }

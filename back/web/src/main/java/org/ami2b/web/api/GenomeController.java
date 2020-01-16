@@ -9,26 +9,30 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.rest.webmvc.RepositoryRestController;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.hateoas.Resource;
+import org.springframework.data.rest.webmvc.PersistentEntityResourceAssembler;
+import org.springframework.data.rest.webmvc.PersistentEntityResource;
 
 import org.ami2b.web.models.Sequence;
 import org.ami2b.web.models.Genome;
 import org.ami2b.web.models.GenomeRepository;
 
-@RestController
-@RequestMapping("/api/genome")
+@RepositoryRestController
 @Slf4j
 public class GenomeController {
 	@Autowired
 	private GenomeRepository genomeRepository;
 
-	@PostMapping("/upload")
+	@PostMapping("/genomes/upload")
 	@ResponseStatus(HttpStatus.CREATED)
-	public void upload(@RequestParam MultipartFile fastaFile) throws IOException {
+	public @ResponseBody PersistentEntityResource upload(@RequestParam MultipartFile fastaFile, @Autowired PersistentEntityResourceAssembler assembler) throws IOException {
 		log.info("Received file of length " + fastaFile.getSize());
 		LinkedHashMap<String,DNASequence> sequences =
 			FastaReaderHelper.readFastaDNASequence(fastaFile.getInputStream());
@@ -48,8 +52,11 @@ public class GenomeController {
 		String header = sequences.keySet().iterator().next();
 		sequence.setSequence(sequences.get(header).getSequenceAsString());
 		Genome genome = new Genome();
+		genome.setDescription(header);
 		genome.setSequence(sequence);
-		genomeRepository.save(genome);
+		genome = genomeRepository.save(genome);
+
+		return assembler.toResource(genome);
 	}	
 
 }

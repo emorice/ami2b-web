@@ -38,6 +38,8 @@ public class UserSeeder {
 	    log.info("Seeding first user");
 	    User user1 = new User();
 	    user1.setUsername("user@domain");
+	    user1.setFirstName("Jane");
+	    user1.setLastName("Doe");
 	    user1.setPassword(passwordEncoder.encode("password"));
 	    addSample(user1);
 	    users.save(user1);
@@ -49,14 +51,15 @@ public class UserSeeder {
 	    seq1.setSequence("AATTCGGCTGACAGATTCGGTGCTGGATAGGCTGAGTCGGTAGGCTGAGTCGGATG");
 	    Genome g1 = new Genome();
 	    g1.setSequence(seq1);
-	    genomes.save(g1);
+	    g1.setDescription("some fake sequence");
+	    g1 = genomes.save(g1);
 	    Project project1 = new Project();
 	    Project project2 = new Project();
 	    project1.setName("prj1");
 	    project1.getGenomes().add(g1);
 	    project2.setName("prj2");
-	    projects.save(project1);
-	    projects.save(project2);
+	    project1 = projects.save(project1);
+	    project2 = projects.save(project2);
 	    user.setProjects(new HashSet<Project>(Arrays.asList(project1, project2)));
     }
 }
