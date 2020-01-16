@@ -32,7 +32,6 @@ public class Feature  {
 	private Genome genome;
 
 	@ManyToMany(mappedBy="tasks")
-	@JsonBackReference
 	private List<User> annotators = new ArrayList();;
 
 	private Long start;
