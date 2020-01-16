@@ -33,13 +33,13 @@ public class Feature  {
 
 	private Long strand;
 
-	private String gene;
+	private String gene = "";
 
-	private String geneBiotype;
+	private String geneBiotype = "";
 
-	private String transcriptBiotype;
+	private String transcriptBiotype = "";
 
-	private String description;
+	private String description = "";
 
 	private int length;
 

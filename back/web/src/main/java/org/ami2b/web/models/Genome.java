@@ -32,7 +32,7 @@ public class Genome  {
 	@OneToOne(cascade=CascadeType.ALL)
 	private Sequence sequence;
 
-	@OneToMany(mappedBy="genome", fetch=FetchType.LAZY)
+	@OneToMany(mappedBy="genome", fetch=FetchType.LAZY, cascade=CascadeType.ALL)
 	@JsonIgnore
 	private List<Feature> features;
 
