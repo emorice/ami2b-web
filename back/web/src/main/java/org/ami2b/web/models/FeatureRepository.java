@@ -8,4 +8,8 @@ import org.ami2b.web.models.Feature;
 
 public interface FeatureRepository extends PagingAndSortingRepository<Feature, Long> {
 	public Page<Feature> findByGenomeId(Long id, Pageable p);
+
+	public Page<Feature> findByGeneContaining(String keyword, Pageable p);
+	public Page<Feature> findByDescriptionContaining(String keyword, Pageable p);
+	public Feature findByAccession(String accession);
 }
