@@ -22,12 +22,12 @@ public class Peptide  {
 	@GeneratedValue
 	private Long id;
 
+	private String accession;
+
 	@ManyToOne()
 	private Genome genome;
 
 	@OneToOne(cascade=CascadeType.ALL)
 	private Sequence sequence;
 
-	@OneToOne(mappedBy="peptide")
-	private Feature feature;
 }

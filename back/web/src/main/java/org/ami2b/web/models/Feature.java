@@ -57,7 +57,4 @@ public class Feature  {
 		setLength(sequence.getSequence().length());
 		this.sequence = sequence;
 	}
-
-	@OneToOne()
-	private Peptide peptide;
 }

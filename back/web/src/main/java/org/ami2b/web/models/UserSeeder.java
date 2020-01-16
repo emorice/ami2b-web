@@ -67,6 +67,7 @@ public class UserSeeder {
 	    Peptide p1 = new Peptide();
 	    p1.setSequence(t1);
 	    p1.setGenome(g1);
+	    p1.setAccession("XXY1234");
 	    p1 = peptides.save(p1);
 	    f1.setAccession("XXY1234");
 	    f1.setStart(2L);
@@ -78,7 +79,8 @@ public class UserSeeder {
 	    f1.setDescription("Hypothetical protein");
 	    f1.setGenome(g1);
 	    f1.setSequence(ss1);
-	    f1.setPeptide(p1);
+	    //f1.setPeptide(p1); // now implicit by accession and resolved
+	    //on-demand
 	    f1 = features.save(f1);
 	    Project project1 = new Project();
 	    Project project2 = new Project();

@@ -242,7 +242,8 @@ public class GenomeController {
 		for(Map.Entry<String, ProteinSequence> record: sequences.entrySet() ) {
 			Sequence sequence = new Sequence();
 			Peptide peptide = new Peptide();
-			//String header = record.getKey();
+			String header = record.getKey();
+			peptide.setAccession(header.split(" ")[0]);
 			sequence.setSequence(record.getValue().getSequenceAsString());
 			peptide.setSequence(sequence);
 			peptide.setGenome(genome);
