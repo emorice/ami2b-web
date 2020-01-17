@@ -21,6 +21,7 @@ public class WebApplication {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
 				registry.addMapping("/auth/**");
+				registry.addMapping("/api/**");
 			}
 		};
 	}
